@@ -429,12 +429,12 @@ module load Bioinformatics
 module load EnTAP/2.0.0
 EnTAP --runN --state 4x --run-ini /scratch/rkersten_root/rkersten0/rkersten/Aglaonema_red/entap_run.params --entap-ini /scratch/rkersten_root/rkersten0/rkersten/Aglaonema_red/entap_config.ini
 ```
-- An entap_config.ini file and a entap_run.params file are required in the entap directory.
+- An entap_config.ini file and a entap_run.params file are required in the EnTAP directory to run EnTAP.
 - Generate entap_config.ini:
 ```
 nano entap_config.ini
 ```
-with follwoing input and save:
+with following input and save:
 ```
 data-generate=false
 data-type=0,
@@ -448,6 +448,7 @@ transdecoder-long-exe=/sw/pkgs/arc/EnTAP/2.0.0/bin/libs/TransDecoder-TransDecode
 transdecoder-predict-exe=/sw/pkgs/arc/EnTAP/2.0.0/bin/libs/TransDecoder-TransDecoder-v5.7.1/TransDecoder.Predict
 interproscan-exe=interproscan.sh
 diamond-exe=/sw/pkgs/arc/EnTAP/1.0.1/bin/libs/bin/diamond
+```
 - Generate	entap_run.params:
 ```
 fpkm=0.5
