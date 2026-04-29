@@ -142,11 +142,11 @@ sed -i 's/_i//g' *fasta
 ```
 **5. Commandline BLAST search**  
 - Commandline PHI-BLAST was applied to searching de novo assembled plant transcriptomes for moroidin core peptides. SPAdes assemblies were combined to a single fasta-file for BLAST database generation prior to PHI-BLAST search.
-- a.	Generate transcriptome input file from multiple transcriptome assembly fasta files in a directory:
+a.	Generate transcriptome input file from multiple transcriptome assembly fasta files in a directory:
 ```
 cat *.fasta > all.fasta
 ```
-- b.	Generate query.faa file:
+b.	Generate query.faa file:
 ```
 nano query.faa
 ```
@@ -160,7 +160,7 @@ SVQPKSVEANAMTEAILKCEVPAMRGEAKYCATSLESMIDFVTSRLGRNIRAISTEVEEGATHVQNYTIY
 HGVKKLTDKKVITCHRLRYPYVVFYCHELENTSIYMVPLKGADGTNAKAITTCHEDTSEWDPKSFVLQLL 
 KVKPGTDPVCHFLSESDVVWVSNHGTYKPA
 ```
-- c. Generate phi_pattern.txt file:
+c. Generate phi_pattern.txt file:
 ```
 nano phi_pattern.txt
 ```
@@ -168,7 +168,7 @@ nano phi_pattern.txt
 ```
 PA QQL-x(2)-W
 ```
-- d. PHI-BLAST search
+d. PHI-BLAST search
   - Install orfipy before PHI-BLAST search as described above. The same orfipy translation parameters were applied for PHI-BLAST search as for Sequenceserver-based tblastn search of burpitide cyclase sequences (i.e. minimum of 450 bp open reading frame length, translation between stop codons).
 ```
 #!/bin/bash
@@ -193,4 +193,107 @@ makeblastdb -in cleaned_all.pep -dbtype prot -out cleaned_all_db
 psiblast -db cleaned_all_db -query query.faa -out cleaned_all_phiblast.txt -phi_pattern phi_pattern.txt
 grep ">" cleaned_all_phiblast.txt | awk '{print $1}' | tr -d '>' > hits.txt
 seqkit grep -f hits.txt cleaned_all.pep > phiblast_all_sequences.pep
+```
+# Differential gene expression analysis
+1.	Batch SRA-download
+```
+#!/bin/bash
+#SBATCH --job-name=sra-download
+#SBATCH --account=your_account
+#SBATCH --partition=standard
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=8
+#SBATCH --time=24:00:00
+#SBATCH --mem=48g
+#SBATCH --mail-user=your@email.com
+#SBATCH --mail-type=END
+#SBATCH --output=./sratools-%j
+source /etc/profile.d/http_proxy.sh
+module load Bioinformatics
+module load sratoolkit/2.10.9-udmejx7
+sed -i 's/\r$//' SRA.txt &
+cat SRA.txt |parallel -j 10 xargs -n 25 -P 0 fasterq-dump --split-files --outdir /path/to/directory/ & jobs -l
+wait
+printf "\n...done\n\n"
+```
+with SRA.txt:
+```
+nano SRA.txt
+```
+including sequences:
+```
+SRR17400452
+SRR17400460
+SRR17400461
+SRR17400462
+SRR17400463
+SRR17400464
+SRR17400465
+SRR17400466
+SRR17400467
+```
+2. Batch trimming
+- Generate directories for fwd reads and rev reads:
+```
+mkdir input_data_1
+mkdir input_data_2
+```
+- Move fwd reads to input_data_1/ directory:
+```
+mv *_1.fastq /path/to/input_data_1/
+```
+- Move rev reads to input_data_2/ directory:
+```
+mv *_2.fastq /path/to/input_data_2/
+```
+Run batch TrimGalore-trimming script:
+```
+#!/bin/bash
+#SBATCH --job-name=trimgalore
+#SBATCH --account=your_account
+#SBATCH --partition=standard 
+#SBATCH --array=1-(insert-number-of-datasets-in-input_data_1_directory)
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=4
+#SBATCH --time=02:00:00
+#SBATCH --mem=7g
+#SBATCH --mail-user=your@email.com
+#SBATCH --mail-type=END
+#SBATCH --output=./trimgalore-%j
+module load Bioinformatics
+module load trimgalore/0.6.7-ztb2tpz
+file1=$(ls ./input_data_1/ | sed -n ${SLURM_ARRAY_TASK_ID}p)
+file2=$(ls ./input_data_2/ | sed -n ${SLURM_ARRAY_TASK_ID}p)
+trim_galore --cores 4 --paired ./input_data_1/${file1} ./input_data_2/${file2}
+```
+3. Combined transcriptome assembly (SPAdes)
+- Combine forward reads of all trimmed paired datasets.
+```
+cat *_1.fq > Aglaonema_1.fq
+```
+- Combine reverse reads of all trimmed paired datasets.
+```
+cat *_2.fq > Aglaonema_2.fq
+```
+- Run SPAdes assembly of combined fastq files:
+```
+#!/bin/bash
+#SBATCH --job-name=SPAdes
+#SBATCH --account=your_account
+#SBATCH --partition=standard
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=7
+#SBATCH --time=24:00:00
+#SBATCH --mem=180g
+#SBATCH --mail-user=your@mail.com
+#SBATCH --mail-type=END
+#SBATCH --output=./SPAdes-%j
+module load Bioinformatics
+module load spades/3.15.5-jhe6qq2
+spades.py --rna -1 ./Aglaonema_1.fq -2 ./Aglaonema_2.fq -o spades_Aglaonema
+cd spades_Aglaonema
+mv Aglaonema.fasta /path/to/directory/Aglaonema.fasta
 ```
