@@ -428,7 +428,7 @@ seqkit grep -r -f pearson07_hits.txt Aglaonema.fasta > Aglaonema_pearson07.fasta
 #SBATCH --output=./entap-%j
 module load Bioinformatics
 module load EnTAP/2.0.0
-EnTAP --runN --state 4x --run-ini /scratch/rkersten_root/rkersten0/rkersten/Aglaonema_red/entap_run.params --entap-ini /scratch/rkersten_root/rkersten0/rkersten/Aglaonema_red/entap_config.ini
+EnTAP --runN --state 4x --run-ini /path/to/directory/Aglaonema_red/entap_run.params --entap-ini /path/to/directory/Aglaonema_red/entap_config.ini
 ```
 - An entap_config.ini file and a entap_run.params file are required in the EnTAP directory to run EnTAP.
 - Generate entap_config.ini:
