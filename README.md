@@ -142,7 +142,7 @@ sed -i 's/_g//g' *fasta
 sed -i 's/_i//g' *fasta
 ```
 **5. Commandline BLAST search**  
-- Commandline PHI-BLAST was applied to searching de novo assembled plant transcriptomes for moroidin core peptides. SPAdes assemblies were combined to a single fasta-file for BLAST database generation prior to PHI-BLAST search.
+- Commandline PHI-BLAST was applied to searching *de novo* assembled plant transcriptomes for moroidin core peptides. SPAdes assemblies were combined to a single fasta-file for BLAST database generation prior to PHI-BLAST search.
 a.	Generate transcriptome input file from multiple transcriptome assembly fasta files in a directory:
 ```
 cat *.fasta > all.fasta
@@ -170,7 +170,7 @@ nano phi_pattern.txt
 PA QQL-x(2)-W
 ```
 d. PHI-BLAST search
-  - Install orfipy before PHI-BLAST search as described above. The same orfipy translation parameters were applied for PHI-BLAST search as for Sequenceserver-based tblastn search of burpitide cyclase sequences (i.e. minimum of 450 bp open reading frame length, translation between stop codons).
+  - Install orfipy before PHI-BLAST search as described above. The same orfipy translation parameters were applied for PHI-BLAST search as for Sequenceserver-based tblastn search of burpitide cyclase sequences (i.e. minimum of 450 bp open reading frame length, translation between stop codons). PHI-BLAST hits were analyzed from output file phiblast_all_sequences.pep for candidate moroidin precursor peptides.
 ```
 #!/bin/bash
 #SBATCH --job-name=phiblast-QLLVWRGH
@@ -351,7 +351,7 @@ HCHWIPQSKPYILKTFREDGSMMDVVAICHVDTSEWPPTFHALQAFGLRPGEATLCHLMS
 EGDIVWFPRGARATVTAM
 ```
 5. Kallisto read quantification
--	Index assembled de novo transcriptome with the following kallisto script:
+-	Index assembled *de novo* transcriptome with the following kallisto script:
 ```
 #!/bin/bash
 #SBATCH --job-name=kallisto_index
@@ -387,12 +387,12 @@ module load Bioinformatics
 module load kallisto/0.46.0
 kallisto quant -i Aglaonema.idx -o output_SRA# SRA#_1_val_1.fq SRA#_2_val_2.fq
 ```
-- Open resulting tsv-files in Microsoft Excel and sort the column ‘target_id’ from ‘AZ’, i.e. transcript names in each SRA#-specific tsv file.
+- Open resulting tsv-files in Microsoft Excel and sort the column ‘target_id’ from ‘A-->Z’, i.e. transcript names in each SRA#-specific tsv file.
 - Generate a new excel sheet with the sorted ‘target_id’ column and all ‘tpm’ columns from each SRA#.tsv file. Add the SRA# to the top of each corresponding tpm column in the newly combined sheet.
 - Copy row of AcoBURP-FLLY transcript to the top of the table as the bait gene for correlation analysis.
-- Calculate Pearson correlation coefficients of all rows below AcoBURP-FLLY.
+- Calculate Pearson correlation coefficients (*r*) of all rows below AcoBURP-FLLY.
 - Sort all Pearson correlation coefficient values from highest to lowest.
-- Copy all “target_id” transcript IDs with Pearson coefficient values 1-0.7 to a txt file (pearson07_hits.txt) for subsequent annotation on a computational cluster with EnTAP (v2.0.0).
+- Copy all “target_id” transcript IDs with Pearson correlation coefficient values *r*=1-0.7 to a txt file (pearson07_hits.txt) for subsequent annotation on a computational cluster with EnTAP (v2.0.0).
 6. Gene annotation with EnTAP
 - Compile sequences of top correlation transcripts from txt file and transcriptome fasta file with seqkit2 script:
 ```
@@ -412,7 +412,7 @@ module load Bioinformatics
 module load seqkit/2.3.0-hsk744b
 seqkit grep -r -f pearson07_hits.txt Aglaonema.fasta > Aglaonema_pearson07.fasta
 ```
-- Annotate the sequences with positive correlation values (1-0.7) in new fasta file (Aglaonema_pearson07.fasta) with EnTAP. EnTAP requires the installation and configuration of a reference database such as Uniprot. Please refer to EnTAP gitlab (https://gitlab.com/PlantGenomicsLab/EnTAP) for database installation.
+- Annotate the sequences with high positive correlation coefficient values (*r*=1-0.7) in new fasta file (Aglaonema_pearson07.fasta) with EnTAP. EnTAP requires the installation and configuration of a reference database such as Uniprot. Please refer to EnTAP gitlab (https://gitlab.com/PlantGenomicsLab/EnTAP) for database installation.
 ```
 #!/bin/bash
 #SBATCH --job-name=entap
@@ -478,5 +478,5 @@ e-value=1e-05
 uninformative=conserved,predicted,unknown,unnamed,hypothetical,putative,unidentified,uncharacterized,uncultured,uninformative,
 diamond-sensitivity=very-sensitive
 ```
-- In the ‘entap_outfiles/final_results’ directory, the entap_results.tsv file was opened in Excel and sorted (A-->Z) to be combined with the correspondingly sorted list of transcripts with Pearson coefficients of 1-0.7 so that annotations were combined with their transcript names and Pearson values.
+- In the ‘entap_outfiles/final_results’ directory, the entap_results.tsv file was opened in Excel and sorted (A-->Z) to be combined with the correspondingly sorted list of transcripts with Pearson correlation coefficients of *r*=1-0.7 so that annotations were combined with their transcript names and *r* values.
 - The resulting table was searched for target gene families such as 2-oxoglutarate-dependent dioxygenases involved in specialized metabolism.
