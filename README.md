@@ -13,7 +13,7 @@
 - **EnTAP v2.0.0**: https://gitlab.com/PlantGenomicsLab/EnTAP 
 - **Transeq**: https://www.ebi.ac.uk/jdispatcher/st/emboss_transeq (https://doi.org/10.1093/nar/gkae241)
 
-The following scripts were submitted to a high performance computing cluster via SLURM. All softwares above were pre-installed under a Bioinformatics module on the computing cluster except orfipy, which were installed as described below. Sequenceserver was used as a cloud-based version (https://sequenceserver.com/).
+The following scripts were submitted to a high performance computing cluster via SLURM (https://github.com/schedmd/slurm). All softwares above were pre-installed under a Bioinformatics module on the computing cluster except orfipy, which was installed as described below. Sequenceserver was used as a cloud-based version (https://sequenceserver.com/).
 
 # Transcriptome assembly – multiple datasets
 **1. Batch SRA-download**
@@ -21,7 +21,7 @@ The following scripts were submitted to a high performance computing cluster via
 ```
 ./vdb-config -i
 ```
-- Target RNA-seq datasets were primarily paired-end data. For large-scale transcriptome mining, SRA datasets were downloaded in batches of 100 datasets per one directory with the following script. SRA accession numbers of target data were listed in an SRA.txt file.
+- Target RNA-seq datasets were paired-end data. For large-scale transcriptome mining, SRA datasets were downloaded in batches of 100 datasets per one directory with the following script. SRA accession numbers of target data were listed in an SRA.txt file with one SRA accession number per line.
 ```
 #!/bin/bash
 #SBATCH --job-name=sra-download
