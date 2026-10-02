@@ -44,7 +44,7 @@ wait
 printf "\n...done\n\n"
 ```
 **2. Batch trimming**
-- Trimming can improve precursor peptide assembly and core peptide detection in burpitide biosynthetic studies. RNA-seq data was trimmed with TrimGalore (v0.6.7) default settings in batches of 100 datasets.
+- Trimming can improve precursor peptide assembly and core peptide detection in burpitide biosynthetic studies. Paired-end RNA-seq data was trimmed with TrimGalore (v0.6.7) default settings in batches of 100 datasets.
 - Generate directories for fwd reads and rev reads:
 ```
 mkdir input_data_1
