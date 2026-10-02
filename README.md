@@ -1,7 +1,7 @@
 # plantMASST Transcriptomics
 
 **Softwares** 
--	**blast-plus**: v2.16.0: https://github.com/ncbi/blast_plus_docs
+-	**blast-plus: v2.16.0**: https://github.com/ncbi/blast_plus_docs
 -	**orfipy v0.0.4**: https://github.com/urmi-21/orfipy
 - **samtools v1.21**: https://github.com/samtools/samtools
 - **seqkit v2.3.0**: https://github.com/shenwei356/seqkit/releases
