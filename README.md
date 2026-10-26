@@ -115,8 +115,8 @@ file2=$(ls ./input_data_trimmed_2/ | sed -n ${SLURM_ARRAY_TASK_ID}p)
 spades.py --rna -1 ./input_data_trimmed_1/${file1} -2 ./input_data_trimmed_2/${file2} -o spades_$file1
 cd spades_$file1
 mv transcripts.fasta /path-to-directory/spades_$file1\.fasta
-for f in *_1_val_1.fasta; do
-  mv -- "$f" "${f%_1_val_1.fasta}.fasta"
+for f in *_1_val_1.fq.fasta; do
+  mv -- "$f" "${f%_1_val_1.fq.fasta}.fasta"
 ```
 **4. BLAST database formatting** 
 - BLAST database generation of transcriptome assemblies by Sequenceserver requires reduction of fasta headers to less than 51 letters. The following script was used for SPAdes-specific assembly fasta file formatting for Sequenceserver-based BLAST database generation and commandline PHI-BLAST search.
